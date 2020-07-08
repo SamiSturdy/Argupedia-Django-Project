@@ -1,0 +1,27 @@
+{% extends "argupedia/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+
+  {{ wizard.form.media }}
+
+{% endblock head %}
+
+{% block content %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <legend class="border-bottom mb-4">Create New Attacking Argument</legend>
+    {{ wizard.management_form }}
+    {% if wizard.form.forms %}
+        {{ wizard.form.management_form }}
+        {% for form in wizard.form.forms %}
+            {{ form | crispy}}
+        {% endfor %}
+    {% else %}
+        {{ wizard.form | crispy }}
+    {% endif %}
+    <input type="submit" class="btn btn-primary" value="Submit"/>
+  </form>
+
+{% endblock content %}

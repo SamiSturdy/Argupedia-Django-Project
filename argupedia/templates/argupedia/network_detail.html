@@ -1,0 +1,163 @@
+{% extends "argupedia/base.html" %}
+{% load static %}
+
+{% block head %}
+
+  <script src="http://d3js.org/d3.v3.js"></script>
+
+{% endblock head %}
+
+{% block content %}
+
+  <h1 class="border-bottom pb-3 mb-3">Network {{network.id}} Overview</h1>
+
+  {% if network.argument_set.count == 1 %}
+
+    <p class="lead">This network currently only contains the initial argument</p>
+    <p class="lead text-muted">Return when more arguments are added to the network to view the network graph</p>
+    <a href="{% url 'argument-details' network.initial_argument.id %}" type="button" class="btn btn-primary btn-block mb-3">View Initial Argument Details</a>
+
+  {% else %}
+
+    <div class="border-bottom pb-3 mb-3" id="graph" align="center">
+    </div>
+
+    <div class="border-bottom">
+      <div class="mb-1">
+      Argument State:
+        <span class="badge badge-success">In</span>
+        <span class="badge badge-danger">Out</span>
+        <span class="badge badge-secondary">Undecided</span>
+      </div>
+      <p class="mb-1">Arrows indicate argument attacks</p>
+      <p class="mb-1">Labels indicate argument IDs</p>
+      <p class="mb-3">Click on any node to view argument details</p>
+      <a href="{% url 'argument-details' network.initial_argument.id %}" type="button" class="btn btn-primary btn-block mb-3">View Initial Argument Details</a>
+    </div>
+
+    <script>
+
+      /* Below is the D3 JavaScript code for implementing the directed graph
+      visualistation on the network overview page.
+      This implementation uses the example shown on https://bl.ocks.org/d3noob/5141278
+      as a basis, and is modified and extended for this use case. */
+
+      d3.json("{% url 'get-network-arguments' network.id %}", function(error, links) {
+
+      var nodes = {};
+
+      links.forEach(function(link) {
+          link.source = nodes[link.source] ||
+              (nodes[link.source] = {id: link.source, state:link.state});
+      });
+
+      links.forEach(function(link) {
+          link.target = nodes[link.target] ||
+              (nodes[link.target] = {id: link.target, state:'{{initial.state}}'});
+      });
+
+      var width = 960,
+          height = 500;
+          border=1;
+          bordercolor='black';
+
+      var force = d3.layout.force()
+          .nodes(d3.values(nodes))
+          .links(links)
+          .size([width, height])
+          .linkDistance(60)
+          .charge(-300)
+          .on("tick", tick)
+          .start();
+
+      var svg = d3.select("#graph").append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .attr("border",border);
+
+      var colors = ['#28a745', '#dc3545', '##6c757d'];
+      var states = ['in', 'out', 'undecided'];
+
+      var color = d3.scale.category20c()
+          .range(colors)
+          .domain(states);
+
+      var borderPath = svg.append("rect")
+   			.attr("x", 0)
+   			.attr("y", 0)
+   			.attr("height", height)
+   			.attr("width", width)
+   			.style("stroke", bordercolor)
+   			.style("fill", "none")
+   			.style("stroke-width", border);
+
+      svg.append("svg:defs").selectAll("marker")
+          .data(["end"])
+        .enter().append("svg:marker")
+          .attr("id", String)
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 15)
+          .attr("refY", -1.5)
+          .attr("markerWidth", 6)
+          .attr("markerHeight", 6)
+          .attr("orient", "auto")
+        .append("svg:path")
+          .attr("d", "M0,-5L10,0L0,5");
+
+      var path = svg.append("svg:g").selectAll("path")
+          .data(force.links())
+        .enter().append("svg:path")
+          .attr("class", "link")
+          .attr("marker-end", "url(#end)")
+          .style("stroke", "black")
+          .style("stroke-width", 1.5)
+          .style("fill", "none");
+
+      var node = svg.selectAll(".node")
+          .data(force.nodes())
+        .enter().append("g")
+          .attr("class", "node")
+          .call(force.drag);
+
+      var url = {% url 'home' %}argument/;
+
+      node.append("a")
+          .attr("xlink:href", function(d) { return url+d.id; })
+          .append("circle")
+          .attr("r", 5)
+          .style("stroke", "black")
+          .style("stroke-width", 1)
+          .style("fill", function (d) {return color(d.state);});
+
+      node.append("text")
+          .attr("x", 12)
+          .attr("dy", ".35em")
+          .style("font-size", "10px")
+          .style("fill", "black")
+          .text(function(d) { return d.id; });
+
+      function tick() {
+          path.attr("d", function(d) {
+              var dx = d.target.x - d.source.x,
+                  dy = d.target.y - d.source.y,
+                  dr = Math.sqrt(dx * dx + dy * dy);
+              return "M" +
+                  d.source.x + "," +
+                  d.source.y + "A" +
+                  dr + "," + dr + " 0 0,1 " +
+                  d.target.x + "," +
+                  d.target.y;
+          });
+
+          node
+              .attr("transform", function(d) {
+        	    return "translate(" + d.x + "," + d.y + ")"; });
+      }
+
+      });
+
+    </script>
+
+  {% endif %}
+
+{% endblock content %}

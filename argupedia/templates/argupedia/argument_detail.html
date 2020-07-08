@@ -1,0 +1,62 @@
+{% extends "argupedia/base.html" %}
+
+{% block content %}
+
+  <h1 class="border-bottom pb-3 mb-3">Argument {{argument.id}}</h1>
+
+  <p class="lead border-bottom pb-3 mb-3">State: {{argument.get_state_display}}</p>
+
+  <p class='lead'>Scheme: {{argument.get_scheme_type_display}}</p>
+
+  <div class="border-bottom mb-3">
+    {% if argument.scheme_type == "action" %}
+      <p>Situation: {{scheme.situation}}</p>
+      <p>Action: {{scheme.action}}</p>
+      <p>Goal: {{scheme.goal}}</p>
+      <p>Value: {{scheme.value}}</p>
+    {% endif %}
+
+    {% if argument.scheme_type == "expert" %}
+      <p>Domain: {{scheme.domain}}</p>
+      <p>Expert Source: {{scheme.expert_source}}</p>
+      <p>Assertion: {{scheme.assertion}}</p>
+      {% if scheme.reference %}
+      <p>Reference: {{scheme.reference}}</p>
+      {% endif %}
+    {% endif %}
+
+    {% if argument.scheme_type == "popular" %}
+      <p>Assertion: {{scheme.assertion}}</p>
+      {% if scheme.reference %}
+      <p>Reference: {{scheme.reference}}</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="border-bottom mb-3">
+    {% if argument.attacking %}
+      <p class="lead">This argument attacks:</p>
+      <a href="{% url 'argument-details' argument.attacking.id %}" type="button" class="btn btn-primary btn-block mb-3">Argument {{argument.attacking.id}} - View Details</a>
+      <p>Targeted Critical Question: {{critical_question}}</p>
+    {%endif%}
+    {% if not argument.attacking %}
+      <p class="lead">This is the initial argument of this network</p>
+    {% endif %}
+  </div>
+
+  <div class="border-bottom mb-3">
+    {% if attackers %}
+      <p class="lead">This argument is attacked by:</p>
+      {% for attacker in attackers %}
+        <a href="{% url 'argument-details' attacker.id %}" type="button" class="btn btn-primary btn-block mb-3">Argument {{attacker.id}} - View Details</a>
+      {% endfor %}
+    {%endif%}
+    {% if not attackers %}
+      <p class="lead">This argument has not yet been attacked</p>
+    {% endif %}
+  </div>
+
+  <a href="{% url 'network-overview' argument.network.id %}" type="button" class="btn btn-primary btn-block mb-1">View Network Graph</a>
+  <a href="{% url 'new-argument' argument.id %}" type="button" class="btn btn-primary btn-block mb-1">Attack This Argument</a>
+
+{% endblock content %}

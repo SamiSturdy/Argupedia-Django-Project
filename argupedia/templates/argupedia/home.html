@@ -1,0 +1,16 @@
+{% extends "argupedia/base.html" %}
+
+{% block content %}
+
+    <h1 class="display-4">Welcome to Argupedia!</h1>
+    {% if user.is_authenticated %}
+      <p class="lead text-muted">Put bias aside and argue the right way. Join the conversation!</p>
+      <a href="{% url 'network-list' %}" type="button" class="btn btn-primary btn-lg">View existing arguments</a>
+      <a href="{% url 'new-initial-argument' %}" type="button" class="btn btn-primary btn-lg">Start new argument</a>
+    {% else %}
+      <p class="lead text-muted">Put bias aside and argue the right way. Log in or register today and join the conversation!</p>
+      <a href="{% url 'login' %}" type="button" class="btn btn-primary btn-lg">Log in</a>
+      <a href="{% url 'register' %}" type="button" class="btn btn-primary btn-lg">Register</a>
+    {% endif %}
+
+{% endblock content %}

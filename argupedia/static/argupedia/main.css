@@ -1,0 +1,32 @@
+body {
+  padding-top: 4.5rem;
+}
+
+p.description {
+  font-style: italic;
+}
+
+.bg-blackblue{
+  background-color: #0B0C10;
+}
+
+.bg-darkblue{
+  background-color: #1F2833;
+}
+
+.bg-grey{
+  background-color: #C5C6C7;
+}
+
+.bg-lightblue{
+  background-color: #66FCF1;
+}
+
+.bg-blue{
+  background-color: #45A29E;
+}
+
+.template-container {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}

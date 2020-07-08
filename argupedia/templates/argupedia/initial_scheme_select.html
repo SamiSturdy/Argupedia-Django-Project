@@ -1,0 +1,16 @@
+{% extends "argupedia/base.html" %}
+
+{% block content %}
+
+    <h1 class="border-bottom pb-3 mb-3">Select a scheme for your new argument:</h1>
+    <p class="lead mt-5">Action Scheme:</p>
+    <p class="description">I believe that in a given situation, S, carrying out a certain action, A, will achieve a goal, G, which will promote a value, V.</p>
+    <a href="{% url 'action-initial' %}" type="button" class="btn btn-primary btn-lg">Select Action Scheme</a>
+    <p class="lead mt-5">Expert Opinion Scheme:</p>
+    <p class="description">I believe that an expert E, an expert in the domain of D, supports a given assertion, A.</p>
+    <a href="{% url 'expert-initial' %}" type="button" class="btn btn-primary btn-lg">Select Expert Opinion Scheme</a>
+    <p class="lead mt-5">Popular Opinion Scheme:</p>
+    <p class="description">I believe that a given assertion, A, is generally accepted to be true according to popular opinion.</p>
+    <a href="{% url 'popular-initial' %}" type="button" class="btn btn-primary btn-lg">Select Popular Opinion Scheme</a>
+
+{% endblock content %}
